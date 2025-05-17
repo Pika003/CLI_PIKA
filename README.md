@@ -16,11 +16,13 @@ A fun Pikachu-themed command-line application built in Go! `pika` brings Pikachu
 
 
 ## 🔫 Available commands:
-- pika       - Displays PIKA PIKA and plays a sound
-- dance      - Shows a dancing Pikachu ASCII animation
-- joke       - Tells a random Pikachu joke
-- info       - Displays information about a Pokémon (usage: pika info [pokemon_name])
-- help       - Shows this help message
+- welcome/w    - Displays a welcome message with Pikachu
+- pika/p       - Displays PIKA PIKA and plays a sound
+- dance/d      - Shows a dancing Pikachu ASCII animation
+- joke/j       - Tells a random Pikachu joke
+- info/i       - Displays information about a Pokémon (usage: pika -info [pokemon_name])
+- help/h       - Shows this help message
+- version/v    - Shows the current version of pika
 
 ---
 
@@ -52,3 +54,6 @@ C:\Users\<YourUsername>\go\bin
 
 Restart your terminal (CMD, PowerShell, Git Bash, etc.)
 
+Now type pika in your terminal to see the Pikachu ASCII animation!
+
+---

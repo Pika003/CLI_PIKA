@@ -1,59 +1,96 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"strings"
 )
 
+//go:embed assets/*.mp3
+var audioFiles embed.FS
+
 func main() {
 	args := os.Args
 	if len(args) < 2 {
-		printHelp()
+		showWelcome()  // Show welcome screen instead of just help
 		return
 	}
 
 	command := strings.ToLower(args[1])
+	// Remove the hyphen if present
+	command = strings.TrimPrefix(command, "-")
 
 	switch command {
-	case "pika":
+	case "welcome", "w":
+		showWelcome()
+		playSound("pikamain.mp3")
+	case "pika", "p":
 		fmt.Println("PIKA PIKA!")
 		playSound("pika.mp3")
-	case "dance":
+	case "dance", "d":
 		PikaDance()
-	case "joke":
+	case "joke", "j":
 		pikaJoke()
 		playSound("pikamain.mp3") 
-	case "help":
+	case "help", "h":
 		printHelp()
 		playSound("pikamain.mp3") 
-	case "info":
+	case "info", "i":
 		if len(args) < 3 {
-			fmt.Println("Please provide a Pokémon name. Example: pika info pikachu")
+			fmt.Println("Please provide a Pokémon name. Example: pika -info pikachu")
 			return
 		}
 		getPokemonInfo(strings.ToLower(args[2]))
 		playSound("pikamain.mp3") 
+	case "version", "v":
+		fmt.Println("Pika CLI v1.0.0")
+		playSound("pikamain.mp3")
 	default:
-		fmt.Println("Unknown command. Try 'pika help' for available commands.")
+		fmt.Println("Unknown command. Try 'pika -help' for available commands.")
 	}
+}
+
+func showWelcome() {
+	welcome := `
+    ⚡️ Welcome to Pika CLI! ⚡️
+    
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠾⠛⢉⣉⣉⣉⡉⠛⠷⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⢀⣴⠋⣠⣴⣿⣿⣿⣿⣿⣿⣿⣦⣌⠙⣷⣄⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⡴⠋⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣌⠙⢷⡀⠀⠀⠀⠀
+    ⠀⠀⠀⢀⡼⢁⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⢹⣆⠀⠀⠀
+    ⠀⠀⢀⡞⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⢻⣆⠀⠀
+    ⠀⠀⡞⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⢻⡆⠀
+    ⠀⢰⢃⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡘⣧⠀
+    ⠀⢸⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⣿⠀
+    ⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+    ⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+    ⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀
+    ⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
+    ⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀
+    ⠀⠀⠀⠀⠈⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⢿⣿⣿⣿⣿⣿⡿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀
+
+    Type 'pika -help' to see available commands!
+    `
+	fmt.Println(welcome)
 }
 
 func printHelp() {
 	fmt.Println("Pika CLI - A fun Pikachu-themed command line tool")
 	fmt.Println("\nAvailable commands:")
-	fmt.Println("  pika       - Displays PIKA PIKA and plays a sound")
-	fmt.Println("  dance      - Shows a dancing Pikachu ASCII animation")
-	fmt.Println("  joke       - Tells a random Pikachu joke")
-	fmt.Println("  info       - Displays information about a Pokémon (usage: pika info [pokemon_name])")
-	fmt.Println("  help       - Shows this help message")
-	// Removed go keyword from here as sound will be played in main
+	fmt.Println("  -pika, -p    - Displays PIKA PIKA and plays a sound")
+	fmt.Println("  -dance, -d   - Shows a dancing Pikachu ASCII animation")
+	fmt.Println("  -joke, -j    - Tells a random Pikachu joke")
+	fmt.Println("  -info, -i    - Displays information about a Pokémon (usage: pika -info [pokemon_name])")
+	fmt.Println("  -help, -h    - Shows this help message")
+	fmt.Println("  -version, -v - Shows the current version")
 }
 
 func pikaJoke() {
@@ -183,42 +220,39 @@ func displayPokemonInfo(data map[string]interface{}) {
 }
 
 func playSound(filename string) {
-    // Get the executable's directory
-    exePath, err := os.Executable()
+    data, err := audioFiles.ReadFile("assets/" + filename)
     if err != nil {
-        fmt.Printf("Error getting executable path: %v\n", err)
+        fmt.Printf("Error reading embedded audio file: %v\n", err)
         return
     }
-    exeDir := filepath.Dir(exePath)
-    
-    // Get absolute path to the audio file
-    audioPath := filepath.Join(exeDir, filename)
-    
-    // Check if file exists
-    if _, err := os.Stat(audioPath); os.IsNotExist(err) {
-        fmt.Printf("Error: Audio file '%s' not found!\n", audioPath)
+
+    tmpFile, err := os.CreateTemp("", "*.mp3")
+    if err != nil {
+        fmt.Printf("Error creating temp file: %v\n", err)
         return
     }
+    defer os.Remove(tmpFile.Name())
+
+    if _, err := tmpFile.Write(data); err != nil {
+        fmt.Printf("Error writing to temp file: %v\n", err)
+        return
+    }
+    tmpFile.Close()
 
     var cmd *exec.Cmd
-
-    if runtime.GOOS == "windows" {
-        // Use mciSendString which is more reliable for playing MP3 files on Windows
-        cmd = exec.Command("powershell", "-c", 
+    if runtime.GOOS == "darwin" {
+        cmd = exec.Command("afplay", tmpFile.Name())
+    } else if runtime.GOOS == "linux" {
+        cmd = exec.Command("aplay", tmpFile.Name())
+    } else if runtime.GOOS == "windows" {
+        cmd = exec.Command("powershell", "-c",
             `Add-Type -AssemblyName PresentationCore; 
             $player = New-Object System.Windows.Media.MediaPlayer;
-            $player.Open([System.Uri]"` + audioPath + `");
-            $player.Play();
-            Start-Sleep -s 3;
-            $player.Stop();
-            $player.Close()`)
-    } else if runtime.GOOS == "darwin" { // macOS
-        cmd = exec.Command("afplay", audioPath)
-    } else { // Linux and others
-        cmd = exec.Command("aplay", audioPath)
+            $player.Open([System.Uri]"` + tmpFile.Name() + `");
+            $player.Play(); Start-Sleep -s 3; $player.Stop(); $player.Close()`)
     }
 
-    fmt.Println("Playing sound from:", audioPath)
+    // fmt.Println("Playing embedded sound...")
     err = cmd.Run()
     if err != nil {
         fmt.Printf("Error playing sound: %v\n", err)
