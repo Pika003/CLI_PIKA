@@ -14,6 +14,16 @@ A fun Pikachu-themed command-line application built in Go! `pika` brings Pikachu
 
 ---
 
+
+## 🔫 Available commands:
+- pika       - Displays PIKA PIKA and plays a sound
+- dance      - Shows a dancing Pikachu ASCII animation
+- joke       - Tells a random Pikachu joke
+- info       - Displays information about a Pokémon (usage: pika info [pokemon_name])
+- help       - Shows this help message
+
+---
+
 ## 🛠️ Installation
 
 ### ✅ Prerequisites
