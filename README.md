@@ -35,4 +35,4 @@ A fun Pikachu-themed command-line application built in Go! `pika` brings Pikachu
 ### 🚀 Install via `go install` (Recommended for Go users)
 
 ```bash
-go install github.com/yourusername/pika@latest
+go install github.com/yourusername/CLI_PIKA@latest
