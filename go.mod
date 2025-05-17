@@ -1,3 +1,3 @@
-module github.com/Pika003/CLI_PIKA
+module github.com/Pika003/pika
 
 go 1.20
