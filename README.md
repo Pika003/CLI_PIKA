@@ -36,3 +36,19 @@ A fun Pikachu-themed command-line application built in Go! `pika` brings Pikachu
 
 ```bash
 go install github.com/yourusername/CLI_PIKA@latest
+```
+---
+
+## ➕ Add to PATH on Windows
+To use pika from anywhere in your terminal:
+
+- Open System Properties → Environment Variables
+- Under User variables, find and click Path → Edit
+- Click New and add:
+```
+C:\Users\<YourUsername>\go\bin
+```
+- Click OK to close all dialogs.
+
+Restart your terminal (CMD, PowerShell, Git Bash, etc.)
+
